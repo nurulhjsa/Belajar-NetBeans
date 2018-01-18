@@ -5,10 +5,14 @@
  */
 package com.gmail.nh.nurulhasanahbule;
 
+import com.gmail.nh.nurulhasanahbule.dao.DepartmentDao;
+import com.gmail.nh.nurulhasanahbule.entity.Department;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -25,27 +29,64 @@ public class AplikasiUtama {
             // membuka koneksi ke database
             Connection connection = ds.getConnection();
             System.out.println("berhasil koneksi ke database");
-             
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("select * from departments");
+            DepartmentDao dao = new DepartmentDao(connection);
+           
+            //save nilai department
+            dao.save(new Department(2002, "Sistem Analis", 1000, null));
             
-            //untuk mengambil data perbaris
-            while (resultSet.next()) {
-                Integer departmentId = resultSet.getInt("department_id");
-                String departmentName = resultSet.getString("department_name");
-                Integer managerId = resultSet.getInt(3);
-                
-                System.out.println(
-                    String.format("{ departmentId : %s, departmentName : %s, managerId : %s }",
-                            departmentId, departmentName, managerId));
+            //untuk menambah nilai dari Dao
+            List<Department> daftarDepartment = dao.findAll();
+            for(Department d : daftarDepartment){
+                System.out.println(d.toString());
             }
             
+            //mengubah data pada posgresql 
+          //String sqlInsert = "insert into departments (department_id, department_name) values (1, 'HRD')";
+          //PreparedStatement preparedStatement = connection.prepareCall(sqlInsert);
+            
+            //mengubah data pada java
+            //String sqlInsert = "insert into departments (department_id, department_name, location_id) values (?, ?, ?)";
+            //PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
+            //preparedStatement.setInt(1, 1005);
+            //preparedStatement.setString(2, "Publisher");
+            //preparedStatement.setInt(3, 1000);
+            
+            //preparedStatement.executeUpdate();
+            
+            //Statement statement = connection.createStatement();
+            //ResultSet resultSet = statement.executeQuery("select * from departments");
+            
+            //untuk mengambil data perbaris secara normal
+            //while (resultSet.next()) {
+            //    Integer departmentId = resultSet.getInt("department_id");
+            //    String departmentName = resultSet.getString("department_name");
+            //    Integer managerId = resultSet.getInt(3);
+            //    Integer locationId = resultSet.getInt(4);
+                
+            //    System.out.println(
+            //        String.format("{ departmentId : %s, departmentName : %s, managerId : %s, locationId : %s }",
+            //                departmentId, departmentName, managerId, locationId));
+            //}
+            
+            //Untuk memanggil get tostring
+            //while (resultSet.next()) {
+            //        Department dep = new Department(
+            //        resultSet.getInt("department_id"),
+            //        resultSet.getString("department_name"),
+            //        resultSet.getInt(3),
+            //        resultSet.getInt(4)
+            //    );
+            //    System.out.println(dep.toString());
+            //}
+            
             // menutup koneksi ke database
-            resultSet.close();
-            statement.close();
+            //preparedStatement.close();
+            //resultSet.close();
+            //statement.close();
             connection.close();
         }catch(SQLException sqle){
             System.err.printf("tidak dapat koneksi ke database ;!");
+            sqle.printStackTrace();
         }
     }
     public static void main(String[] args) {
