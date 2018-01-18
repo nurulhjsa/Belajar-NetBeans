@@ -24,15 +24,26 @@ public class AplikasiUtama {
         ds.setPassword("hr");
         ds.setUrl("jdbc:postgresql://localhost:5432/hr");
         ds.setDriverClassName("org.postgresql.Driver");
-            
+         
+        Connection connection = null;
+        
         try{
             // membuka koneksi ke database
-            Connection connection = ds.getConnection();
+            // Connection connection = ds.getConnection();
+            
+            //tambahan rollback dan commit
+            connection = ds.getConnection();
+            connection.setAutoCommit(false);
             System.out.println("berhasil koneksi ke database");
             DepartmentDao dao = new DepartmentDao(connection);
            
             //save nilai department
-            dao.save(new Department(2002, "Sistem Analis", 1000, null));
+            dao.save(new Department(null, "Sistem Analis", 1000, null));
+            
+            dao.save(new Department(null, "Sistem Analis", 1000, null));
+            //error karena duplikate primary (dicopy yg sama datanya)
+//          dao.update(new Department(3004, "Sistem Analis", 1000, null));
+            dao.delete(3003);
             
             //untuk menambah nilai dari Dao
             List<Department> daftarDepartment = dao.findAll();
@@ -83,10 +94,19 @@ public class AplikasiUtama {
             //preparedStatement.close();
             //resultSet.close();
             //statement.close();
+            connection.commit();
             connection.close();
         }catch(SQLException sqle){
             System.err.printf("tidak dapat koneksi ke database ;!");
             sqle.printStackTrace();
+            //tambahan commit dan rollback
+            try {
+                if (connection != null) {
+                    connection.rollback();;
+                }
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
     public static void main(String[] args) {

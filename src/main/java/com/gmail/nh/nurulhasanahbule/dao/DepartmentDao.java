@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +27,11 @@ public class DepartmentDao {
     }
     
     public void save(Department dep)throws SQLException {
-        String sqlInsert = "insert into departments (department_id, department_name, location_id) values (?, ?, ?)";
+        String sqlInsert = "insert into departments (department_id, department_name, location_id) values (nextval('departments_department_id_seq'), ?, ?)";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
-        preparedStatement.setInt(1, dep.getId());
-        preparedStatement.setString(2, dep.getNama());
-        preparedStatement.setInt(3, dep.getLocationId());
+ //     preparedStatement.setInt(1, dep.getId());
+        preparedStatement.setString(1, dep.getNama());
+        preparedStatement.setInt(2, dep.getLocationId());
         preparedStatement.executeUpdate();
         preparedStatement.close();
     }
@@ -39,7 +40,8 @@ public class DepartmentDao {
         String sqlInsert = "update departments set department_name = ?, location_id = ?, manager_id = ? where department_id = ?";
         PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
         preparedStatement.setInt(4, dep.getId());
-        preparedStatement.setString(3, dep.getNama());
+        preparedStatement.setNull(3, Types.INTEGER);
+        preparedStatement.setString(1, dep.getNama());
         preparedStatement.setInt(2, dep.getLocationId());
         preparedStatement.executeUpdate();
         preparedStatement.close();
