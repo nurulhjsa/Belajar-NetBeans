@@ -26,14 +26,22 @@ public class DepartmentDao {
         this.connection = connection;
     }
     
-    public void save(Department dep)throws SQLException {
+    public Department save(Department dep)throws SQLException {
         String sqlInsert = "insert into departments (department_id, department_name, location_id) values (nextval('departments_department_id_seq'), ?, ?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert);
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlInsert, Statement.RETURN_GENERATED_KEYS);
  //     preparedStatement.setInt(1, dep.getId());
         preparedStatement.setString(1, dep.getNama());
         preparedStatement.setInt(2, dep.getLocationId());
         preparedStatement.executeUpdate();
+        //tambahan return generated
+        ResultSet primaryKey = preparedStatement.getGeneratedKeys();
+        if(primaryKey.next()){
+            dep.setId(primaryKey.getInt(1));
+        }
+        
         preparedStatement.close();
+        primaryKey.close();
+        return dep;
     }
     
     public void update(Department dep)throws SQLException {
